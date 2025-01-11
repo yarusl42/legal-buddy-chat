@@ -7,27 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { advisors } from "@/data/advisors";
 import { Scale, Clock, Shield, Brain } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AdvisorCard } from "@/components/AdvisorCard";
+import { Link } from "react-router-dom";
 
 const Landing = () => {
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
-
-  const handleAdvisorSelect = () => {
-    setShowModal(false);
-    navigate("/chat");
-  };
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -168,36 +152,16 @@ const Landing = () => {
           <p className="mb-8 text-xl">
             Start your free consultation with our AI legal advisors today
           </p>
-          <Button
-            size="lg"
-            className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
-            onClick={() => setShowModal(true)}
-          >
-            Get Started Now
-          </Button>
+          <Link to="/chat">
+            <Button
+              size="lg"
+              className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
+            >
+              Get Started Now
+            </Button>
+          </Link>
         </div>
       </section>
-
-      {/* Select Lawyer Modal */}
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-primary mb-4">
-              Select Your Legal Advisor
-            </DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto pr-2">
-            {advisors.map((advisor) => (
-              <AdvisorCard
-                key={advisor.id}
-                advisor={advisor}
-                isSelected={false}
-                onClick={handleAdvisorSelect}
-              />
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
