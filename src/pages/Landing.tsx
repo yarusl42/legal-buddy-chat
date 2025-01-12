@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/carousel";
 import { advisors } from "@/data/advisors";
 import { Scale, Clock, Shield, Brain } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Landing = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -25,14 +27,14 @@ const Landing = () => {
               Connect with AI-powered legal advisors for instant, accurate, and
               personalized legal consultation available 24/7.
             </p>
-            <Link to="/chat">
-              <Button
-                size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
-              >
-                Start Free Consultation
-              </Button>
-            </Link>
+            
+            <Button
+              size="lg"
+              className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
+              onClick={() => navigate("/select-lawyer")}
+            >
+              Start Free Consultation
+            </Button>
           </div>
         </div>
       </section>
@@ -152,7 +154,7 @@ const Landing = () => {
           <p className="mb-8 text-xl">
             Start your free consultation with our AI legal advisors today
           </p>
-          <Link to="/chat">
+          <Link to="/select-lawyer">
             <Button
               size="lg"
               className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"

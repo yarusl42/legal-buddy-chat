@@ -4,8 +4,12 @@ import { AdvisorCard } from "../components/AdvisorCard";
 import { ChatMessage } from "../components/ChatMessage";
 import { ChatInput } from "../components/ChatInput";
 import { ChatMessage as ChatMessageType } from "../types/advisor";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle  } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedAdvisor, setSelectedAdvisor] = useState(advisors[0]);
   const [messages, setMessages] = useState<ChatMessageType[]>([
     {
@@ -56,14 +60,33 @@ const Index = () => {
       {/* Sidebar */}
       <div className="w-80 bg-white p-4 border-r border-gray-200 overflow-y-auto">
         <h2 className="text-xl font-bold text-primary mb-4">Legal Advisors</h2>
-        {advisors.map((advisor) => (
-          <AdvisorCard
-            key={advisor.id}
-            advisor={advisor}
-            isSelected={advisor.id === selectedAdvisor.id}
-            onClick={() => handleAdvisorChange(advisor)}
-          />
-        ))}
+        <Button
+          variant="default"
+          className="mt-2 mb-4 bg-primary text-white hover:bg-primary/90"
+          onClick={() => navigate("/select-lawyer")}
+        >
+          <MessageCircle className="mr-2 h-4 w-4" />
+          New Chat
+        </Button>
+
+        {advisors.length > 0 && (
+          <h3 className="text-lg font-bold text-primary mt-4 mb-2">Your advisors</h3>
+        )}
+        {advisors.length === 0 ? (
+          <div className="text-center text-gray-500">
+            <p>Need legal advice? Initiate a chat with an advisor</p>
+          </div>
+        ) : (
+          advisors.map((advisor) => (
+            <AdvisorCard
+              key={advisor.id}
+              advisor={advisor}
+              isSelected={advisor.id === selectedAdvisor.id}
+              onClick={() => handleAdvisorChange(advisor)}
+            />
+          ))
+        )}
+        
       </div>
 
       {/* Chat Area */}
