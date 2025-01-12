@@ -18,46 +18,46 @@ export const ProfileMenu = () => {
   const userName = "John Doe";
 
   return (
-    <div className="fixed bottom-4 left-4">
+    <div className="z-50">
       <SettingsDialog 
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
       />
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg border bg-white p-2 pr-3 hover:bg-accent">
-          <Avatar>
-            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+        <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg border bg-white p-2 pr-3 hover:bg-accent shadow-sm">
+          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+            <AvatarFallback className="text-sm sm:text-base">{userName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <span>{userName}</span>
+          <span className="text-sm sm:text-base hidden sm:inline">{userName}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuLabel>{userName}</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-sm sm:text-base">{userName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <a 
               href="https://adilet.zan.kz/rus" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex w-full items-center gap-2 cursor-pointer"
+              className="flex w-full items-center gap-2 cursor-pointer text-sm sm:text-base"
             >
               <Book className="h-4 w-4" />
               Laws
             </a>
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setIsSettingsOpen(true)}>
+          <DropdownMenuItem onSelect={() => setIsSettingsOpen(true)} className="text-sm sm:text-base">
             <div className="flex w-full items-center gap-2 cursor-pointer">
               <Settings className="h-4 w-4" />
               Settings
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/payments" className="flex w-full items-center gap-2 cursor-pointer">
+            <Link to="/payments" className="flex w-full items-center gap-2 cursor-pointer text-sm sm:text-base">
               <CreditCard className="h-4 w-4" />
               Payments
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem className="text-sm sm:text-base">
             <div className="flex w-full items-center gap-2 cursor-pointer">
               <LogIn className="h-4 w-4" />
               {isLoggedIn ? "Logout" : "Login"}

@@ -17,14 +17,14 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
     >
       <div
         className={cn(
-          "max-w-[80%] rounded-lg p-4",
+          "max-w-[90%] sm:max-w-[80%] rounded-lg p-3 sm:p-4",
           isAdvisor
             ? "bg-primary text-primary-foreground"
             : "bg-secondary text-secondary-foreground"
         )}
       >
-        <p className="text-sm">{message.content}</p>
-        <span className="text-xs opacity-70 mt-1 block">
+        <p className="text-sm sm:text-base">{message.content}</p>
+        <span className="text-[10px] sm:text-xs opacity-70 mt-1 block">
           {new Date(message.timestamp).toLocaleTimeString()}
         </span>
       </div>

@@ -34,15 +34,17 @@ function App() {
               onClose={() => setErrorBannerVisible(false)}
             />
           )}
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/chat" element={<Index />} />
-            <Route path="/select-lawyer" element={<SelectLawyer />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Routes>
-          <div className="fixed bottom-4 left-4">
+          <div className="px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/chat" element={<Index />} />
+              <Route path="/select-lawyer" element={<SelectLawyer />} />
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+            </Routes>
+          </div>
+          <div className="fixed bottom-4 left-4 z-50">
             <ProfileMenu />
           </div>
         </div>
