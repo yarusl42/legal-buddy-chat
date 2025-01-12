@@ -11,15 +11,29 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAppDispatch } from "@/store/hooks";
+import { setLoading, setError } from "@/store/slices/chatsSlice";
+import { Advisor } from '../types/advisor';
+import { chatService } from '@/services/chatService';
 
 const SelectLawyer = () => {
-  const navigate = useNavigate();
-  const [selectedLawyer, setSelectedLawyer] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [selectedLawyer, setSelectedLawyer] = useState<string | null>(null);
 
-  const handleSelectLawyer = (lawyerId: string) => {
-    setSelectedLawyer(lawyerId);
-    navigate('/chat', { state: { lawyerId } });
+  const handleSelectLawyer = async (lawyer: Advisor) => {
+    try {
+      setSelectedLawyer(lawyer.id);
+      dispatch(setLoading(true));
+      
+      await chatService.createChat(lawyer);
+      navigate('/chat');
+    } catch (error) {
+      dispatch(setError(error instanceof Error ? error.message : 'Failed to create chat'));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   // Determine chunk size based on screen size
@@ -45,9 +59,9 @@ const SelectLawyer = () => {
       <BackButton to="/" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">Choose Your Legal Expert</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">Выберите своего юридического эксперта</h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Select a qualified lawyer to assist you with your legal matters
+            Выберите квалифицированного юриста, чтобы помочь вам с вашими юридическими вопросами
           </p>
         </div>
 
@@ -61,7 +75,7 @@ const SelectLawyer = () => {
                       key={advisor.id}
                       advisor={advisor}
                       isSelected={selectedLawyer === advisor.id}
-                      onClick={() => handleSelectLawyer(advisor.id)}
+                      onClick={() => handleSelectLawyer(advisor)}
                     />
                   ))}
                 </div>

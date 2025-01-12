@@ -23,10 +23,12 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             : "bg-secondary text-secondary-foreground"
         )}
       >
-        <p className="text-sm sm:text-base">{message.content}</p>
-        <span className="text-[10px] sm:text-xs opacity-70 mt-1 block">
-          {new Date(message.timestamp).toLocaleTimeString()}
-        </span>
+        <div className={`message ${message.sender}`}>
+          <p className="text-sm sm:text-base">{message.content}</p>
+          <span className="text-[10px] sm:text-xs opacity-70 mt-1 block">
+            {new Intl.DateTimeFormat('be-BY').format(new Date(message.timestamp))}
+          </span>
+        </div>
       </div>
     </div>
   );

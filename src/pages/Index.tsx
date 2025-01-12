@@ -1,92 +1,87 @@
-import { useState } from "react";
-import { advisors } from "../data/advisors";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { AdvisorCard } from "../components/AdvisorCard";
 import { ChatMessage } from "../components/ChatMessage";
 import { ChatInput } from "../components/ChatInput";
-import { ChatMessage as ChatMessageType } from "../types/advisor";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { MessageCircle  } from "lucide-react";
+import { setActiveChat } from "@/store/slices/chatsSlice";
+import { chatService } from '@/services/chatService';
 
 const Index = () => {
   const navigate = useNavigate();
-  const [selectedAdvisor, setSelectedAdvisor] = useState(advisors[0]);
-  const [messages, setMessages] = useState<ChatMessageType[]>([
-    {
-      id: "1",
-      content: `Hello! I'm ${advisors[0].name}, your ${advisors[0].specialty} advisor. How can I help you today?`,
-      sender: "advisor",
-      timestamp: new Date(),
-      advisorId: advisors[0].id,
-    },
-  ]);
+  const dispatch = useAppDispatch();
+  
+  const selectedAdvisors = useAppSelector((state) => state.advisors.selectedAdvisors);
+  const chats = useAppSelector((state) => state.chats.chats);
+  const activeChat = useAppSelector((state) => state.chats.activeChat);
+  const messages = useAppSelector((state) => 
+    activeChat ? state.messages.messages[activeChat] || [] : []
+  );
+  console.log("messages", messages);
+  console.log("activeChat", activeChat);
+  console.log("chats", chats);
+  console.log("selectedAdvisors", selectedAdvisors);
+  const selectedAdvisor = selectedAdvisors.find(
+    (advisor) => chats.find((chat) => chat.id === activeChat)?.advisorId === advisor.id
+  );
 
-  const handleSendMessage = (content: string) => {
-    const userMessage: ChatMessageType = {
-      id: Date.now().toString(),
+  useEffect(() => {
+    if (selectedAdvisors.length === 0) {
+      navigate("/select-lawyer");
+    }
+  }, [selectedAdvisors, navigate]);
+
+  const handleSendMessage = async (content: string) => {
+    if (!activeChat || !selectedAdvisor) return;
+
+    await chatService.sendMessage({
       content,
-      sender: "user",
-      timestamp: new Date(),
-      advisorId: selectedAdvisor.id,
-    };
-
-    const advisorMessage: ChatMessageType = {
-      id: (Date.now() + 1).toString(),
-      content: `As a ${selectedAdvisor.specialty} specialist, I would need more context to provide accurate advice. Could you please provide more details?`,
-      sender: "advisor",
-      timestamp: new Date(Date.now() + 1000),
-      advisorId: selectedAdvisor.id,
-    };
-
-    setMessages((prev) => [...prev, userMessage, advisorMessage]);
+      chatId: activeChat
+    });  
   };
 
-  const handleAdvisorChange = (advisor: typeof advisors[0]) => {
-    setSelectedAdvisor(advisor);
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        content: `Hello! I'm ${advisor.name}, your ${advisor.specialty} advisor. I've reviewed the conversation and I'm ready to help.`,
-        sender: "advisor",
-        timestamp: new Date(),
-        advisorId: advisor.id,
-      },
-    ]);
+  const handleChatSelect = (chatId: string) => {
+    dispatch(setActiveChat(chatId));
   };
+
+  if (!selectedAdvisor) {
+    return null;
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-80 bg-white p-4 border-r border-gray-200 overflow-y-auto">
-        <h2 className="text-xl font-bold text-primary mb-4">Legal Advisors</h2>
+        <h2 className="text-xl font-bold text-primary mb-4">Юридические консультанты</h2>
         <Button
           variant="default"
           className="mt-2 mb-4 bg-primary text-white hover:bg-primary/90"
           onClick={() => navigate("/select-lawyer")}
         >
           <MessageCircle className="mr-2 h-4 w-4" />
-          New Chat
+          Новый чат
         </Button>
 
-        {advisors.length > 0 && (
-          <h3 className="text-lg font-bold text-primary mt-4 mb-2">Your advisors</h3>
-        )}
-        {advisors.length === 0 ? (
-          <div className="text-center text-gray-500">
-            <p>Need legal advice? Initiate a chat with an advisor</p>
-          </div>
-        ) : (
-          advisors.map((advisor) => (
-            <AdvisorCard
-              key={advisor.id}
-              advisor={advisor}
-              isSelected={advisor.id === selectedAdvisor.id}
-              onClick={() => handleAdvisorChange(advisor)}
-            />
-          ))
+        {selectedAdvisors.length > 0 && (
+          <h3 className="text-lg font-bold text-primary mt-4 mb-2">Ваши консультанты</h3>
         )}
         
+        {chats.map((chat) => {
+          const advisor = selectedAdvisors.find((a) => a.id === chat.advisorId);
+          if (!advisor) return null;
+          
+          return (
+            <AdvisorCard
+              key={chat.id}
+              isSmall={true}
+              advisor={{ ...advisor, avatar: "/placeholder.svg" }}
+              isSelected={chat.id === activeChat}
+              onClick={() => handleChatSelect(chat.id)}
+            />
+          );
+        })}
       </div>
 
       {/* Chat Area */}
@@ -95,7 +90,7 @@ const Index = () => {
         <div className="bg-white border-b border-gray-200 p-4">
           <div className="flex items-center space-x-3">
             <img
-              src={selectedAdvisor.avatar}
+              src="/placeholder.svg"
               alt={selectedAdvisor.name}
               className="w-10 h-10 rounded-full"
             />

@@ -11,5 +11,5 @@ export interface ChatMessage {
   content: string;
   sender: "user" | "advisor";
   timestamp: Date;
-  advisorId: string;
+  chatId: string;
 }

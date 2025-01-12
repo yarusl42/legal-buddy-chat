@@ -34,7 +34,7 @@ function App() {
               onClose={() => setErrorBannerVisible(false)}
             />
           )}
-          <div className="px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+          <div className="mx-auto">
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/chat" element={<Index />} />
