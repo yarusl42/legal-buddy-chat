@@ -1,29 +1,33 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch"; 
-import { Button } from "@/components/ui/button"; // Import Button component
-import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import PaymentMethodsTab from "./PaymentMethodsTab";
 
 const BillingTab = () => {
-  const [isAutoRenewalEnabled, setIsAutoRenewalEnabled] = useState(true); // Default state
+  const [isAutoRenewalEnabled, setIsAutoRenewalEnabled] = useState(true);
 
   const handleToggleAutoRenewal = () => {
     setIsAutoRenewalEnabled(!isAutoRenewalEnabled);
-    // Here you would typically call an API to update the user's auto-renewal preference
+    toast.success(`Auto-renewal ${!isAutoRenewalEnabled ? 'enabled' : 'disabled'}`);
   };
 
-  const handlePayment = (entry) => {
-    // Simulate payment processing
-    toast.success(`Payment for ${entry.plan} on ${entry.date} was successful!`);
+  const handlePayment = (entry: { date: string; plan: string; amount: string }) => {
+    toast.promise(
+      new Promise((resolve) => setTimeout(resolve, 1500)), // Simulate API call
+      {
+        loading: 'Processing payment...',
+        success: `Payment for ${entry.plan} (${entry.date}) was successful!`,
+        error: 'Payment failed. Please try again.',
+      }
+    );
   };
 
-  // Dummy variables for current plan and billing information
   const currentPlan = "Professional";
   const currentPrice = "$79/month";
   const nextBillingDate = "Dec 1, 2023";
 
-  // Dummy variable for billing history
   const billingHistory = [
     { date: "November 2023", plan: "Professional Plan", amount: "$79.00", status: "Paid" },
     { date: "December 2023", plan: "Professional Plan", amount: "$79.00", status: "Unpaid" },
@@ -35,7 +39,7 @@ const BillingTab = () => {
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Billing Overview</h3>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Current Plan</div>
               <div className="text-2xl font-bold">{currentPlan}</div>
@@ -75,9 +79,17 @@ const BillingTab = () => {
                   </div>
                   <div className="text-right">
                     <div className="font-medium">{entry.amount}</div>
-                    <div className={`text-sm ${entry.status === "Paid" ? "text-green-600" : "text-red-600"}`}>{entry.status}</div>
+                    <div className={`text-sm ${entry.status === "Paid" ? "text-green-600" : "text-red-600"}`}>
+                      {entry.status}
+                    </div>
                     {entry.status === "Unpaid" && (
-                      <Button variant="outline" onClick={() => handlePayment(entry)}>Pay</Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handlePayment(entry)}
+                        className="mt-2"
+                      >
+                        Pay Now
+                      </Button>
                     )}
                   </div>
                 </div>

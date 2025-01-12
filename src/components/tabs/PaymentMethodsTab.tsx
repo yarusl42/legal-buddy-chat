@@ -6,7 +6,6 @@ import RemoveCardDialog from './RemoveCardDialog';
 import { toast } from "sonner";
 import { Check, CreditCard as CardIcon, Star } from "lucide-react";
 
-
 interface PaymentCard {
   id: string;
   last4: string;
@@ -40,11 +39,13 @@ const PaymentMethodsTab = () => {
 
   const validateCard = (): boolean => {
     const newErrors: any = {};
-    if (!/\d{16}$/.test(formData.number.replace(/\s/g, ""))) {
-      newErrors.number = "Invalid card number";
+    
+    if (!/^\d{16}$/.test(formData.number.replace(/\s/g, ""))) {
+      newErrors.number = "Please enter a valid 16-digit card number";
     }
+    
     if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
-      newErrors.expiry = "Invalid expiry date";
+      newErrors.expiry = "Please enter a valid expiry date (MM/YY)";
     } else {
       const [month, year] = formData.expiry.split("/");
       const now = new Date();
@@ -53,9 +54,11 @@ const PaymentMethodsTab = () => {
         newErrors.expiry = "Card has expired";
       }
     }
+    
     if (!/^\d{3,4}$/.test(formData.cvv)) {
-      newErrors.cvv = "Invalid CVV";
+      newErrors.cvv = "Please enter a valid CVV (3-4 digits)";
     }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,6 +68,18 @@ const PaymentMethodsTab = () => {
       toast.error("Please correct the card information");
       return;
     }
+
+    toast.promise(
+      new Promise((resolve) => {
+        setTimeout(resolve, 1500);
+      }),
+      {
+        loading: 'Adding your card...',
+        success: 'Card added successfully',
+        error: 'Failed to add card. Please try again.',
+      }
+    );
+
     const [month, year] = formData.expiry.split("/");
     const newCard: PaymentCard = {
       id: Date.now().toString(),
@@ -74,31 +89,54 @@ const PaymentMethodsTab = () => {
       isPreferred: cards.length === 0,
       brand: "visa"
     };
+
     setCards(prev => [...prev, newCard]);
     setIsAddingCard(false);
     setFormData({ number: "", expiry: "", cvv: "" });
-    toast.success("Card added successfully");
   };
 
   const handleRemoveCard = (cardId: string) => {
+    toast.promise(
+      new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      }),
+      {
+        loading: 'Removing card...',
+        success: 'Card removed successfully',
+        error: 'Failed to remove card. Please try again.',
+      }
+    );
+
     setCards(prev => {
       const removedCard = prev.find(card => card.id === cardId);
       const remainingCards = prev.filter(card => card.id !== cardId);
+      
       if (removedCard?.isPreferred && remainingCards.length > 0) {
         remainingCards[0].isPreferred = true;
       }
+      
       return remainingCards;
     });
+    
     setIsRemovingCard(null);
-    toast.success("Card removed successfully");
   };
 
   const setPreferredCard = (cardId: string) => {
+    toast.promise(
+      new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      }),
+      {
+        loading: 'Updating preferred card...',
+        success: 'Default payment method updated',
+        error: 'Failed to update default payment method',
+      }
+    );
+
     setCards(prev => prev.map(card => ({
       ...card,
       isPreferred: card.id === cardId
     })));
-    toast.success("Preferred card updated");
   };
 
   return (
@@ -114,7 +152,9 @@ const PaymentMethodsTab = () => {
               <div>
                 <div className="font-medium flex items-center gap-2">
                   •••• {card.last4}
-                  {card.isPreferred && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+                  {card.isPreferred && (
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Expires {card.expiryMonth}/{card.expiryYear}
