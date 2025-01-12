@@ -5,14 +5,14 @@ export const advisors: Advisor[] = [
     id: "1",
     name: "Sarah Johnson",
     specialty: "Corporate Law",
-    avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    avatar: "/placeholder.svg",
     description: "Expert in business law with 15 years of experience handling mergers, acquisitions, and corporate governance.",
   },
   {
     id: "2",
     name: "Michael Chen",
     specialty: "Intellectual Property",
-    avatar: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952",
+    avatar: "/placeholder.svg",
     description: "Specialized in patents and trademarks, helping innovators protect their intellectual property rights.",
   },
   {
