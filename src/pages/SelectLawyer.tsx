@@ -15,6 +15,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { setLoading, setError } from "@/store/slices/chatsSlice";
 import { Advisor } from '../types/advisor';
 import { chatService } from '@/services/chatService';
+import { userService } from '@/services/userService';
 
 const SelectLawyer = () => {
   const isMobile = useIsMobile();
@@ -26,8 +27,8 @@ const SelectLawyer = () => {
     try {
       setSelectedLawyer(lawyer.id);
       dispatch(setLoading(true));
-      
       await chatService.createChat(lawyer);
+      userService.setOnboardingDone();
       navigate('/chat');
     } catch (error) {
       dispatch(setError(error instanceof Error ? error.message : 'Failed to create chat'));

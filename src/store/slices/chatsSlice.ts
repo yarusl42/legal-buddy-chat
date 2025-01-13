@@ -1,14 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChatMessage } from '@/types/advisor';
-
-interface Chat {
-  id: string;
-  advisorId: string;
-  lastMessage?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'active' | 'closed';
-}
+import { Chat } from '@/types/types';
 
 interface ChatsState {
   chats: Chat[];
@@ -28,16 +19,21 @@ const chatsSlice = createSlice({
   name: 'chats',
   initialState,
   reducers: {
+    clearAllChats: () => initialState,
+
     createChat: (state, action: PayloadAction<{ chatId: string; advisorId: string }>) => {
       const newChat: Chat = {
         id: action.payload.chatId,
         advisorId: action.payload.advisorId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         status: 'active'
       };
       state.chats.push(newChat);
       state.activeChat = newChat.id;
+    },
+    setChats: (state, action: PayloadAction<Chat[]>) => {
+      state.chats = action.payload;
     },
     setActiveChat: (state, action: PayloadAction<string>) => {
       state.activeChat = action.payload;
@@ -46,7 +42,7 @@ const chatsSlice = createSlice({
       const chat = state.chats.find(c => c.id === action.payload.chatId);
       if (chat) {
         chat.lastMessage = action.payload.message;
-        chat.updatedAt = new Date();
+        chat.updatedAt = new Date().toISOString();
       }
     },
     deleteChat: (state, action: PayloadAction<string>) => {
@@ -71,6 +67,8 @@ export const {
   deleteChat,
   setLoading,
   setError,
+  setChats,
+  clearAllChats
 } = chatsSlice.actions;
 
 export default chatsSlice.reducer;

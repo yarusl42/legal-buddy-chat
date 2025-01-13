@@ -10,6 +10,6 @@ export interface ChatMessage {
   id: string;
   content: string;
   sender: "user" | "advisor";
-  timestamp: Date;
+  timestamp: string;
   chatId: string;
 }

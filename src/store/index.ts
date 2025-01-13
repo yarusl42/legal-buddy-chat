@@ -5,6 +5,8 @@ import plansReducer from './slices/plansSlice';
 import advisorsReducer from './slices/advisorsSlice';
 import chatsReducer from './slices/chatsSlice';
 import messagesReducer from './slices/messagesSlice';
+import usageReducer from './slices/usageSlice';
+import paymentMethodsReducer from './slices/paymentMethodsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ export const store = configureStore({
     advisors: advisorsReducer,
     chats: chatsReducer,
     messages: messagesReducer,
+    usage: usageReducer,
+    paymentMethods: paymentMethodsReducer
   },
 });
 

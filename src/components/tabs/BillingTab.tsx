@@ -1,17 +1,22 @@
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch"; 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { setAutoRenewal } from "@/store/slices/billingSlice";
 import PaymentMethodsTab from "./PaymentMethodsTab";
 
 const BillingTab = () => {
-  const [isAutoRenewalEnabled, setIsAutoRenewalEnabled] = useState(true);
+  const isAutoRenewalEnabled = useAppSelector((state) => state.billing.isAutoRenewalEnabled);
+  const nextBillingDate = useAppSelector((state) => state.billing.nextBillingDate);
+  const billingHistory = useAppSelector((state) => state.billing.billingHistory);
+  const dispatch = useAppDispatch();
 
   const handleToggleAutoRenewal = () => {
-    setIsAutoRenewalEnabled(!isAutoRenewalEnabled);
-    toast.success(`Auto-renewal ${!isAutoRenewalEnabled ? 'enabled' : 'disabled'}`);
+    dispatch(setAutoRenewal(!isAutoRenewalEnabled));
   };
+  const availablePlans = useAppSelector((state) => state.plans.availablePlans);
+  const currentPlan = useAppSelector((state) => state.plans.currentPlan);
 
   const handlePayment = (entry: { date: string; plan: string; amount: string }) => {
     toast.promise(
@@ -24,16 +29,6 @@ const BillingTab = () => {
     );
   };
 
-  const currentPlan = "Professional";
-  const currentPrice = "$79/month";
-  const nextBillingDate = "Dec 1, 2023";
-
-  const billingHistory = [
-    { date: "November 2023", plan: "Professional Plan", amount: "$79.00", status: "Paid" },
-    { date: "December 2023", plan: "Professional Plan", amount: "$79.00", status: "Unpaid" },
-    { date: "October 2023", plan: "Professional Plan", amount: "$79.00", status: "Paid" },
-  ];
-
   return (
     <div className="space-y-4">
       <Card className="p-6">
@@ -43,17 +38,21 @@ const BillingTab = () => {
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Current Plan</div>
               <div className="text-2xl font-bold">{currentPlan}</div>
-              <div className="text-sm text-muted-foreground">{currentPrice}</div>
+              <div className="text-sm text-muted-foreground">{`${availablePlans[currentPlan].price.amount} ${availablePlans[currentPlan].price.currency}/month`}</div>
             </Card>
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Next Billing Date</div>
               <div className="text-2xl font-bold">{nextBillingDate}</div>
               <div className="flex items-center text-sm text-muted-foreground mt-1">
-                <div className="mr-2">Auto-renewal:</div>
-                <Switch 
-                  checked={isAutoRenewalEnabled} 
-                  onCheckedChange={handleToggleAutoRenewal} 
-                />
+                {currentPlan !== "Free" && (
+                  <>
+                    <div className="mr-2">Auto-renewal:</div>
+                    <Switch
+                      checked={isAutoRenewalEnabled}
+                      onCheckedChange={handleToggleAutoRenewal}
+                    />
+                  </>
+                )}
               </div>
             </Card>
           </div>

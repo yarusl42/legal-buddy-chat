@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { BillingHistory } from '@/types/types';
 
 interface PaymentCard {
   id: string;
@@ -9,37 +10,36 @@ interface PaymentCard {
   brand: string;
 }
 
-interface BillingHistory {
-  date: string;
-  plan: string;
-  amount: string;
-  status: "Paid" | "Unpaid";
-}
-
 interface BillingState {
   paymentMethods: PaymentCard[];
   billingHistory: BillingHistory[];
   isAutoRenewalEnabled: boolean;
   nextBillingDate: string;
+  billingPeriod: { start: string; end: string; year: number } | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: BillingState = {
   paymentMethods: [],
-  billingHistory: [
-    { date: "November 2023", plan: "Professional Plan", amount: "$79.00", status: "Paid" },
-    { date: "December 2023", plan: "Professional Plan", amount: "$79.00", status: "Unpaid" },
-    { date: "October 2023", plan: "Professional Plan", amount: "$79.00", status: "Paid" },
-  ],
-  isAutoRenewalEnabled: true,
-  nextBillingDate: "Dec 1, 2023",
+  billingHistory: [],
+  isAutoRenewalEnabled: false,
+  nextBillingDate: "None",
+  billingPeriod: null,
+  loading: false,
+  error: null,
 };
 
 const billingSlice = createSlice({
   name: 'billing',
   initialState,
   reducers: {
+    clearAllBillingState: () => initialState,
     addPaymentMethod: (state, action: PayloadAction<PaymentCard>) => {
       state.paymentMethods.push(action.payload);
+    },
+    setBillingPeriod: (state, action: PayloadAction<{ start: string; end: string; year: number }>) => {
+      state.billingPeriod = action.payload;
     },
     removePaymentMethod: (state, action: PayloadAction<string>) => {
       const index = state.paymentMethods.findIndex(card => card.id === action.payload);
@@ -68,6 +68,12 @@ const billingSlice = createSlice({
         entry.status = action.payload.status;
       }
     },
+    setNextBillingDate: (state, action: PayloadAction<string>) => {
+      state.nextBillingDate = action.payload;
+    },
+    setBillingHistory: (state, action: PayloadAction<BillingHistory[]>) => {
+      state.billingHistory = action.payload;
+    },
   },
 });
 
@@ -78,6 +84,10 @@ export const {
   setAutoRenewal,
   addBillingHistory,
   updateBillingStatus,
+  setNextBillingDate,
+  setBillingHistory,
+  clearAllBillingState,
+  setBillingPeriod
 } = billingSlice.actions;
 
 export default billingSlice.reducer;

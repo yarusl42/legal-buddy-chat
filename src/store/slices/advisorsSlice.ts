@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Advisor } from '@/types/advisor';
+import { Advisor } from '@/types/types';
 
 interface AdvisorsState {
   availableAdvisors: Advisor[];
   selectedAdvisors: Advisor[];
+  selectedAdvisor: Advisor;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: AdvisorsState = {
-  availableAdvisors: [],
-  selectedAdvisors: [],
+  availableAdvisors: [] as Advisor[],
+  selectedAdvisors: [] as Advisor[],
+  selectedAdvisor: {} as Advisor,
   isLoading: false,
   error: null,
 };
@@ -19,6 +21,10 @@ const advisorsSlice = createSlice({
   name: 'advisors',
   initialState,
   reducers: {
+    clearAllAdvisors: () => initialState,
+    setSelectedAdvisor: (state, action: PayloadAction<Advisor>) => {
+      state.selectedAdvisor = action.payload
+    },
     setAvailableAdvisors: (state, action: PayloadAction<Advisor[]>) => {
       state.availableAdvisors = action.payload;
     },
@@ -26,6 +32,9 @@ const advisorsSlice = createSlice({
       if (!state.selectedAdvisors.find(advisor => advisor.id === action.payload.id)) {
         state.selectedAdvisors.push(action.payload);
       }
+    },
+    setSelectedAdvisors: (state, action: PayloadAction<Advisor[]>) => {
+      state.selectedAdvisors = action.payload;
     },
     removeSelectedAdvisor: (state, action: PayloadAction<string>) => {
       state.selectedAdvisors = state.selectedAdvisors.filter(
@@ -47,6 +56,9 @@ export const {
   removeSelectedAdvisor,
   setLoading,
   setError,
+  setSelectedAdvisors,
+  clearAllAdvisors,
+  setSelectedAdvisor
 } = advisorsSlice.actions;
 
 export default advisorsSlice.reducer;

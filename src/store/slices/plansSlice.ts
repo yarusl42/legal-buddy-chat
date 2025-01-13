@@ -17,8 +17,8 @@ interface PlansState {
   availablePlans: Record<string, Plan>;
 }
 
-const initialState: PlansState = {
-  currentPlan: "Professional",
+const initialPlansState: PlansState = {
+  currentPlan: "Free",
   availablePlans: {
     Free: {
       name: "Free",
@@ -41,8 +41,12 @@ const initialState: PlansState = {
 
 const plansSlice = createSlice({
   name: 'plans',
-  initialState,
+  initialState: initialPlansState,
   reducers: {
+    clearAllPlans: () => initialPlansState,
+    setAvailablePlans: (state, action: PayloadAction<Record<string, Plan>>) => {
+      state.availablePlans = action.payload;
+    },
     setCurrentPlan: (state, action: PayloadAction<string>) => {
       state.currentPlan = action.payload;
     },
@@ -52,5 +56,7 @@ const plansSlice = createSlice({
   },
 });
 
-export const { setCurrentPlan, updatePlan } = plansSlice.actions;
+ 
+export const { setCurrentPlan, updatePlan, setAvailablePlans, clearAllPlans } = plansSlice.actions;
+
 export default plansSlice.reducer;

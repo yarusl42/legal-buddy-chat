@@ -1,35 +1,34 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, LineChart, Line } from "recharts";
+import { ResponsiveContainer, XAxis, YAxis, Tooltip, LineChart, Line } from "recharts";
 import { Progress } from "@/components/ui/progress";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 
-const requestsData = [
-  { date: "Jan 1", requests: 550 },
-  { date: "Jan 2", requests: 0 },
-  { date: "Jan 3", requests: 0 },
-  { date: "Jan 4", requests: 0 },
-  { date: "Jan 5", requests: 0 },
-  { date: "Jan 6", requests: 0 },
-  { date: "Jan 7", requests: 10 },
-  { date: "Jan 8", requests: 170 },
-];
+const UsageTab = ({ setActiveTab }) => {
+  const availablePlans = useAppSelector((state) => state.plans.availablePlans);
+  const currentPlanFromStore = useAppSelector((state) => state.plans.currentPlan);
+  const usagePerMonthLast12Month = useAppSelector((state) => state.usage.usagePerMonthLast12Month);
+  const totalRequests = useAppSelector((state) => state.usage.totalRequests);
+  const usedRequests = useAppSelector((state) => state.usage.usedRequests);
+  const billingPeriod = useAppSelector((state) => state.billing.billingPeriod);
+  const [currentPlan, setCurrentPlan] = useState(`${availablePlans[currentPlanFromStore].price.amount} ${availablePlans[currentPlanFromStore].price.currency}/month`);
 
-const UsageTab = () => {
-  const [activeTab, setActiveTab] = useState('usage');
+  useEffect(() => {
+    if (availablePlans[currentPlanFromStore]) {
+      const planAmount = availablePlans[currentPlanFromStore].price.amount;
+      const planCurrency = availablePlans[currentPlanFromStore].price.currency;
+      const planDisplay = planAmount === "Free" ? planAmount : `${planAmount} ${planCurrency}/month`;
+      setCurrentPlan(planDisplay);
+    }
+  }, [availablePlans, currentPlanFromStore]);
 
   const switchToPricing = () => {
     setActiveTab('pricing');
   };
 
-  const totalRequests = 1000;
-  const usedRequests = 170;
   const remainingRequests = totalRequests - usedRequests;
   const percentageUsed = (usedRequests / totalRequests) * 100;
-
-  // Dummy variables for current plan and billing period
-  const currentPlan = "Pro ($79/month)";
-  const billingPeriod = "Jan 1 - Jan 31, 2025";
 
   return (
     <div className="space-y-6">
@@ -37,7 +36,7 @@ const UsageTab = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold">Usage</h3>
-            <p className="text-sm text-muted-foreground">Current billing period: {billingPeriod}</p>
+            <p className="text-sm text-muted-foreground">Current billing period: {billingPeriod ? `${billingPeriod.start} - ${billingPeriod.end}, ${billingPeriod.year}` : 'No billing period available'}</p>
           </div>
           <Button onClick={switchToPricing}>Upgrade Plan</Button>
         </div>
@@ -63,12 +62,12 @@ const UsageTab = () => {
         <h3 className="text-lg font-semibold mb-4">Number of prompts</h3>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            {requestsData.length === 0 ? (
+            {usagePerMonthLast12Month.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-500">
                 No usage data available
               </div>
             ) : (
-              <LineChart data={requestsData}>
+              <LineChart data={usagePerMonthLast12Month}>
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip 

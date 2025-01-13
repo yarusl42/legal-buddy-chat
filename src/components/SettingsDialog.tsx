@@ -9,6 +9,8 @@ import { X, Check, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useAppSelector } from "@/store/hooks";
+import { userService } from "@/services/userService";
 
 interface SettingsDialogProps {
   isOpen: boolean;
@@ -16,37 +18,34 @@ interface SettingsDialogProps {
 }
 
 const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
-  const userDetails = {
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 234 567 8900",
-  };
+  const userName = useAppSelector((state) => state.user.name);
+  const userPhone = useAppSelector((state) => state.user.phone);
+  const userEmail = useAppSelector((state) => state.user.email);
+  const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
+
+  const [tempPhone, setTempPhone] = useState(userPhone);
+  const [tempName, setTempName] = useState(userName);
 
   const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [phoneValue, setPhoneValue] = useState(userDetails.phone);
-  const [tempPhone, setTempPhone] = useState(userDetails.phone);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [tempName, setTempName] = useState(userDetails.name);
 
   const handleSavePhone = () => {
-    setPhoneValue(tempPhone);
+    userService.updateMe(userName, tempPhone);
     setIsEditingPhone(false);
-    // Here you would typically make an API call to update the phone number
   };
 
   const handleCancelEdit = () => {
-    setTempPhone(phoneValue);
+    setTempPhone(userPhone);
     setIsEditingPhone(false);
   };
 
   const handleSaveName = () => {
-    setTempName(tempName);
+    userService.updateMe(tempName, userPhone);
     setIsEditingName(false);
-    // Here you would typically make an API call to update the name
   };
 
   const handleCancelNameEdit = () => {
-    setTempName(userDetails.name);
+    setTempName(userName);
     setIsEditingName(false);
   };
 
@@ -67,7 +66,8 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="rounded-lg border p-6 w-full">
+
+          { isLoggedIn ? (<div className="rounded-lg border p-6 w-full">
             <h2 className="mb-4 text-xl font-semibold">Personal Information</h2>
             <div className="space-y-4">
               <div>
@@ -103,7 +103,7 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
                       className="mt-1 cursor-pointer hover:text-primary transition-colors"
                       onClick={() => setIsEditingName(true)}
                     >
-                      {userDetails.name || "-"}
+                      {userName || "-"}
                     </p>
                     <Pencil className="h-4 w-4 text-gray-500 cursor-pointer" onClick={() => setIsEditingName(true)} />
                   </div>
@@ -143,7 +143,7 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
                       className="mt-1 cursor-pointer hover:text-primary transition-colors min-w-[100px]"
                       onClick={() => setIsEditingPhone(true)}
                     >
-                      {phoneValue || "-"}
+                      {userPhone || "-"}
                     </p>
                     <Pencil className="h-4 w-4 text-gray-500 cursor-pointer" onClick={() => setIsEditingPhone(true)} />
                   </div>
@@ -152,10 +152,11 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
 
               <div>
                 <label className="text-sm font-medium text-gray-500">Email</label>
-                <p className="mt-1">{userDetails.email}</p>
+                <p className="mt-1">{userEmail}</p>
               </div>
             </div>
-          </div>
+          </div>) : ''}
+          
 
           <div className="rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">Legal</h2>

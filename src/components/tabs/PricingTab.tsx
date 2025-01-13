@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import AddCardDialog from './AddCardDialog';
 import { Check } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
+import { setCurrentPlan } from "@/store/slices/plansSlice";
+import { addCard } from "@/store/slices/paymentMethodsSlice";
 
 const PricingTab = () => {
-  const [currentPlan, setCurrentPlan] = useState("Professional");
+  const availablePlans = useAppSelector((state) => state.plans.availablePlans);
+  const currentPlan = useAppSelector((state) => state.plans.currentPlan);
+  const paymentMethods = useAppSelector((state) => state.paymentMethods);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
-  const [paymentMethods, setPaymentMethods] = useState([]);
   const [newPlan, setNewPlan] = useState("");
   const [formData, setFormData] = useState({
     number: "",
@@ -18,21 +21,6 @@ const PricingTab = () => {
     cvv: ""
   });
   const [errors, setErrors] = useState({});
-
-  const plans = {
-    Free: {
-      price: { amount: "Free", currency: "" },
-      features: ["5 calls/month", "Basic legal templates"]
-    },
-    Basic: {
-      price: { amount: "29", currency: "$" },
-      features: ["50 calls/month", "Basic legal templates", "Email support"]
-    },
-    Professional: {
-      price: { amount: "79", currency: "$" },
-      features: ["150 calls/month", "All legal templates", "Priority support", "Document review"]
-    }
-  };
 
   const handleChoosePlan = async (plan: string) => {
     if (plan === currentPlan) {
@@ -90,7 +78,7 @@ const PricingTab = () => {
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4">Subscription Plans</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Object.entries(plans).map(([planName, planDetails]) => (
+          {Object.entries(availablePlans).map(([planName, planDetails]) => (
             <Card key={planName} className="p-6 border flex flex-col relative">
               {planName === "Basic" && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-sm">
@@ -131,7 +119,21 @@ const PricingTab = () => {
         formData={formData} 
         setFormData={setFormData} 
         errors={errors} 
-        handleAddCard={() => handleUpgradePlan(newPlan)} 
+        handleAddCard={() => {
+          addCard({
+            ...formData,
+              id: Array(10)
+                .fill('')
+                .map(() => String.fromCharCode(97 + Math.floor(Math.random() * 26)))
+                .join(''),
+              last4: formData.number.slice(-4),
+              expiryMonth: formData.expiry.split('/')[0],
+              expiryYear: formData.expiry.split('/')[1],
+              isPreferred: false,
+              brand: "visa",
+          });
+          handleUpgradePlan(newPlan)
+        }} 
       />
     </div>
   );

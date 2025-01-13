@@ -7,7 +7,7 @@ interface MessagesState {
   error: string | null;
 }
 
-const initialState: MessagesState = {
+const initialMessagesState: MessagesState = {
   messages: {},
   isLoading: false,
   error: null,
@@ -15,8 +15,9 @@ const initialState: MessagesState = {
 
 const messagesSlice = createSlice({
   name: 'messages',
-  initialState,
+  initialState: initialMessagesState,
   reducers: {
+    clearAllMessages: () => initialMessagesState,
     addMessage: (state, action: PayloadAction<{ chatId: string; message: ChatMessage }>) => {
       const { chatId, message } = action.payload;
       if (!state.messages[chatId]) {
@@ -27,12 +28,15 @@ const messagesSlice = createSlice({
         chatId
       });
     },
-    setMessages: (state, action: PayloadAction<{ chatId: string; messages: ChatMessage[] }>) => {
-      const { chatId, messages } = action.payload;
-      state.messages[chatId] = messages.map(msg => ({
-        ...msg,
-        chatId
-      }));
+    setMessages: (state, action: PayloadAction<ChatMessage[]>) => {
+      state.messages = {};
+
+      for (const message of action.payload) {
+        if (!state.messages[message.chatId]) {
+          state.messages[message.chatId] = [];
+        }
+        state.messages[message.chatId].push(message);
+      }
     },
     clearMessages: (state, action: PayloadAction<string>) => {
       delete state.messages[action.payload];
@@ -52,6 +56,7 @@ export const {
   clearMessages,
   setLoading,
   setError,
+  clearAllMessages
 } = messagesSlice.actions;
 
 export default messagesSlice.reducer;

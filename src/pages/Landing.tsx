@@ -10,15 +10,19 @@ import {
 import { advisors } from "@/data/advisors";
 import { Scale, Clock, Shield, Brain } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { ProfileMenu } from "@/components/ProfileMenu";
+import { useAppSelector } from "@/store/hooks";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-primary py-20 text-white">
         <div className="container mx-auto px-4">
+          {isLoggedIn ? <ProfileMenu /> : null}
           <div className="max-w-3xl">
             <h1 className="mb-6 text-5xl font-bold leading-tight">
               Expert Legal Guidance at Your Fingertips

@@ -4,30 +4,25 @@ import { Button } from "@/components/ui/button";
 import AddCardDialog from './AddCardDialog';
 import RemoveCardDialog from './RemoveCardDialog';
 import { toast } from "sonner";
-import { Check, CreditCard as CardIcon, Star } from "lucide-react";
+import { CreditCard as CardIcon, Star } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
+import { setCards, removeCard, setAsPreferred } from "@/store/slices/paymentMethodsSlice";
+import { useAppDispatch } from '@/store/hooks';
 
 interface PaymentCard {
   id: string;
+  number: string;
   last4: string;
   expiryMonth: string;
   expiryYear: string;
   isPreferred: boolean;
   brand: string;
+  cvv: string;
 }
 
-const initialCards: PaymentCard[] = [
-  {
-    id: "1",
-    last4: "4242",
-    expiryMonth: "12",
-    expiryYear: "25",
-    isPreferred: true,
-    brand: "visa"
-  }
-];
-
 const PaymentMethodsTab = () => {
-  const [cards, setCards] = useState<PaymentCard[]>(initialCards);
+  const dispatch = useAppDispatch();
+  const cards = useAppSelector((state) => state.paymentMethods);
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [isRemovingCard, setIsRemovingCard] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -83,14 +78,16 @@ const PaymentMethodsTab = () => {
     const [month, year] = formData.expiry.split("/");
     const newCard: PaymentCard = {
       id: Date.now().toString(),
+      number: formData.number,
       last4: formData.number.slice(-4),
       expiryMonth: month,
       expiryYear: year,
       isPreferred: cards.length === 0,
-      brand: "visa"
+      brand: "visa",
+      cvv: formData.cvv
     };
 
-    setCards(prev => [...prev, newCard]);
+    dispatch(setCards([...cards, newCard]))
     setIsAddingCard(false);
     setFormData({ number: "", expiry: "", cvv: "" });
   };
@@ -107,17 +104,7 @@ const PaymentMethodsTab = () => {
       }
     );
 
-    setCards(prev => {
-      const removedCard = prev.find(card => card.id === cardId);
-      const remainingCards = prev.filter(card => card.id !== cardId);
-      
-      if (removedCard?.isPreferred && remainingCards.length > 0) {
-        remainingCards[0].isPreferred = true;
-      }
-      
-      return remainingCards;
-    });
-    
+    dispatch(removeCard(cardId)); 
     setIsRemovingCard(null);
   };
 
@@ -133,10 +120,7 @@ const PaymentMethodsTab = () => {
       }
     );
 
-    setCards(prev => prev.map(card => ({
-      ...card,
-      isPreferred: card.id === cardId
-    })));
+    dispatch(setAsPreferred(cardId));
   };
 
   return (
