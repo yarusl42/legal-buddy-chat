@@ -13,11 +13,12 @@ import RecoverPassword from "@/pages/RecoverPassword";
 import { ProfileMenu } from "./components/ProfileMenu";
 import ErrorBanner from "@/components/ErrorBanner";
 import { ToastProvider } from "@/components/ui/toast";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from '@/utils';
 import { useAppSelector } from "@/store/hooks";
 
 function App() {
-  const [loading, setLoading] = useState(true); // New loading state
+  const [loading, setLoading] = useState(true);
   const [errorBannerVisible, setErrorBannerVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const auth = useAuth();
@@ -43,7 +44,9 @@ function App() {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center h-screen">Loading...</div>
+        <div className="flex justify-center items-center h-screen">
+          <Spinner size={32} />
+        </div>
       ) : (
         <ToastProvider>
           <Router>
@@ -77,7 +80,6 @@ function App() {
         </ToastProvider>
       )}
     </>
-    
   );
 }
 

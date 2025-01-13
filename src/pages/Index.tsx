@@ -6,6 +6,7 @@ import { AdvisorCard } from "@/components/AdvisorCard";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { setActiveChat } from "@/store/slices/chatsSlice";
 import { chatService } from '@/services/chatService';
 import { setSelectedAdvisor } from "@/store/slices/advisorsSlice";
@@ -138,7 +139,9 @@ const Index = () => {
                 <ChatMessage key={message.id} message={message} />
               ))   
             ) : (
-              <div>loading...</div>
+              <div className="flex justify-center items-center h-full">
+                <Spinner size={32} />
+              </div>
             )
           }
         </div>
