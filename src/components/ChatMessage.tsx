@@ -39,7 +39,6 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
   };
 
   const handleSaveEdit = () => {
-    // Here you would typically save the edited message
     message.content = editedMessage;
     setIsEditing(false);
     toast.success("Сообщение обновлено");
@@ -50,7 +49,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
     tooltip: string, 
     onClick: () => void 
   }) => (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
           <button
@@ -70,13 +69,13 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
   return (
     <div
       className={cn(
-        "flex w-full mb-4 animate-message-fade-in",
+        "flex w-full mb-4 animate-message-fade-in group",
         isAdvisor ? "justify-start" : "justify-end"
       )}
     >
       <div
         className={cn(
-          "max-w-[90%] sm:max-w-[80%] rounded-lg p-3 sm:p-4",
+          "max-w-[90%] sm:max-w-[80%] rounded-lg p-3 sm:p-4 relative",
           isAdvisor
             ? "text-gray-900"
             : "bg-[rgba(65,182,250,0.1)] text-gray-900"
@@ -99,7 +98,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             <>
               <p className="text-sm sm:text-base">{message.content}</p>
               {!isAdvisor && (
-                <div className="flex gap-1.5 mt-2">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-8 left-0 flex gap-1.5">
                   <ActionButton
                     icon={Copy}
                     tooltip="Копировать"
@@ -113,7 +112,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                 </div>
               )}
               {isAdvisor && (
-                <div className="flex gap-1.5 mt-2">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-8 left-0 flex gap-1.5">
                   <ActionButton
                     icon={Copy}
                     tooltip="Копировать"
