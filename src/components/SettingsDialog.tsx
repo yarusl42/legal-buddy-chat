@@ -260,6 +260,11 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
                   </Button>
                 </div>
               </div>
+              <div className="text-center mt-4">
+                <Link onClick={onClose} to="/forgot-password" className="text-blue-500 hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
             </TabsContent>
           )}
         </Tabs>

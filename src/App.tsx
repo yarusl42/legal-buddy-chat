@@ -61,7 +61,7 @@ function App() {
                 <Routes>
                   <Route path="/login" element={isLoggedIn ? <Navigate to="/chat" /> : <Login />} />
                   <Route path="/signup" element={isLoggedIn ? <Navigate to="/chat" /> : <Signup />} />
-                  <Route path="/forgot-password" element={isLoggedIn ? <Navigate to="/chat" /> : <ForgotPassword />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/recover-password/:code" element={<RecoverPassword />} />
                   
                   <Route path="/" element={isLoggedIn ? <Navigate to="/chat" /> : <Landing />} />
