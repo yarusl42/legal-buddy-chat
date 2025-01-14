@@ -78,7 +78,9 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
           "max-w-[90%] sm:max-w-[80%] rounded-lg p-3 sm:p-4 relative",
           isAdvisor
             ? "text-gray-900"
-            : "bg-[rgba(65,182,250,0.1)] text-gray-900"
+            : isEditing 
+              ? "bg-transparent" 
+              : "bg-[rgba(65,182,250,0.1)] text-gray-900"
         )}
       >
         <div className={`message ${message.sender}`}>  
@@ -87,7 +89,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
               <Textarea
                 value={editedMessage}
                 onChange={(e) => setEditedMessage(e.target.value)}
-                className="flex-1 text-sm sm:text-base pr-12 h-24 pt-2 resize-none rounded-none w-full"
+                className="flex-1 text-sm sm:text-base pr-12 h-24 pt-2 resize-none rounded-none w-[500px]"
               />
               <div className="flex justify-end mt-2">
                 <Button onClick={handleSaveEdit} className="ml-2 bg-primary">Сохранить</Button>
