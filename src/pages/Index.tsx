@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -20,9 +20,14 @@ const Index = () => {
   const chats = useAppSelector((state) => state.chats.chats);
   const activeChat = useAppSelector((state) => state.chats.activeChat);
   const selectedAdvisor = useAppSelector((state) => state.advisors.selectedAdvisor);
-  const messages = useAppSelector((state) => state.messages.messages);
+  const messages = useAppSelector((state) => 
+    activeChat ? state.messages.messages[activeChat] || [] : []
+  );
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [messagesOpacity, setMessagesOpacity] = useState(1);
   
   const handleChatSelect = (chatId: string) => {
+    setMessagesOpacity(0);
     dispatch(setActiveChat(chatId));
   };
   
@@ -63,6 +68,30 @@ const Index = () => {
       navigate("/select-lawyer");
     }
   }, [doneOnboarding, navigate]);
+
+  useEffect(() => {
+    if (messagesContainerRef.current && activeChat) {
+      // Instant scroll to bottom
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'instant'
+      });
+      
+      // Fade in messages after a brief delay
+      setTimeout(() => {
+        setMessagesOpacity(1);
+      }, 50);
+    }
+  }, [activeChat]);
+
+  useEffect(() => {
+    if (messagesContainerRef.current && activeChat && messages.length > 0) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [messages, activeChat]);
 
   const handleSendMessage = async (content: string) => {
     if (!activeChat || !selectedAdvisor) return;
@@ -109,7 +138,7 @@ const Index = () => {
         })}
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative">
         <div className="bg-white border-b border-gray-200 p-4">
           <div className="flex items-center space-x-3">
             {
@@ -131,24 +160,32 @@ const Index = () => {
             }
           </div>
         </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {
-            chats?.length && Object.keys(messages).includes(activeChat) ? (
-              messages[activeChat].map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))   
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                <Spinner size={32} />
-              </div>
-            )
-          }
+        <div 
+          className="flex-1 overflow-y-auto p-4 space-y-4 flex justify-center" 
+          ref={messagesContainerRef}
+          style={{ 
+            opacity: messagesOpacity,
+            transition: 'opacity 0.2s ease-in-out' 
+          }}
+        >
+          <div className="w-full max-w-[800px]">
+            {
+              chats?.length ? (
+                messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} />
+                ))   
+              ) : (
+                <div className="flex justify-center items-center h-full">
+                  <Spinner size={32} />
+                </div>
+              )
+            }
+          
+          </div>
         </div>
-
-        <div className="p-4 border-t border-gray-200 bg-white">
-          <ChatInput onSendMessage={handleSendMessage} />
-        </div>
+        <div className="w-full max-w-[800px] bg-white absolute bottom-2 left-1/2 transform -translate-x-1/2">
+            <ChatInput onSendMessage={handleSendMessage} />
+          </div>
       </div>
     </div>
   );

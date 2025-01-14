@@ -92,10 +92,12 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
         </DialogHeader>
 
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-          </TabsList>
+          {isLoggedIn && (
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+            </TabsList>
+          )}
 
           <TabsContent value="general" className="space-y-6">
             {isLoggedIn ? (
@@ -189,7 +191,7 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
                 </div>
               </div>
             ) : ''}
-
+            
             <div className="rounded-lg border p-6">
               <h2 className="mb-4 text-xl font-semibold">Legal</h2>
               <div className="space-y-4">
@@ -218,47 +220,48 @@ const SettingsDialog = ({ isOpen, onClose }: SettingsDialogProps) => {
               </div>
             </div>
           </TabsContent>
-
-          <TabsContent value="security" className="space-y-6">
-            <div className="rounded-lg border p-6">
-              <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Current Password</label>
-                  <Input
-                    type="password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    className="mt-1"
-                  />
+          {isLoggedIn && (
+            <TabsContent value="security" className="space-y-6">
+              <div className="rounded-lg border p-6">
+                <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Current Password</label>
+                    <Input
+                      type="password"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">New Password</label>
+                    <Input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Repeat New Password</label>
+                    <Input
+                      type="password"
+                      value={repeatPassword}
+                      onChange={(e) => setRepeatPassword(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handlePasswordReset}
+                    className="w-full"
+                  >
+                    Update Password
+                  </Button>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">New Password</label>
-                  <Input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Repeat New Password</label>
-                  <Input
-                    type="password"
-                    value={repeatPassword}
-                    onChange={(e) => setRepeatPassword(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <Button 
-                  onClick={handlePasswordReset}
-                  className="w-full"
-                >
-                  Update Password
-                </Button>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

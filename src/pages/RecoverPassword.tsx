@@ -4,12 +4,15 @@ import { Input } from "@/components/ui/input";
 import { useNavigate, useParams } from 'react-router-dom';
 import { authService } from '@/services/authService';
 import { toast } from 'react-toastify';
+import { useAppSelector } from "@/store/hooks";
+import { Spinner } from "@/components/ui/spinner";
 
 const RecoverPassword = () => {
   const { code } = useParams<{ code: string }>(); // Get the code from the URL parameters
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [loading, setLoading] = useState(false); // New loading state
+  const isLoggedIn = useAppSelector((state) => state.user.isLoggedIn);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,13 +33,19 @@ const RecoverPassword = () => {
     // Here you would typically send a request to your backend to update the password
     // Simulate successful password update
     toast.success('Password updated successfully!');
-    navigate('/login'); // Redirect to login after successful update
+    if (isLoggedIn) {
+      navigate('/'); 
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
       {loading ? ( // Conditional rendering for loading state
-        <p>Loading...</p>
+        <div className="flex justify-center items-center h-screen">
+          <Spinner size={32} />
+        </div>
       ) : (
         <>
           <h1 className="text-2xl font-bold mb-4">Установите новый пароль</h1>

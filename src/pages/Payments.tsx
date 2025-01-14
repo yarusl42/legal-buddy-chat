@@ -8,6 +8,7 @@ import BillingTab from "@/components/tabs/BillingTab";
 import PricingTab from "@/components/tabs/PricingTab";
 import { ChartBar, CreditCard, DollarSign } from "lucide-react";
 import { paymentMethodsService } from "@/services/paymentMethodsService";
+import { Spinner } from "@/components/ui/spinner";
 
 const Payments = () => {
   const [activeTab, setActiveTab] = useState("usage");
@@ -32,7 +33,9 @@ const Payments = () => {
 
   return (
     <>
-      {loading ? (<div>Loading...</div>) : (
+      {loading ? (<div className="flex justify-center items-center h-screen">
+          <Spinner size={32} />
+        </div>) : (
         <div className="flex h-screen bg-gray-50">
         <div className="w-80 bg-white p-4 border-r border-gray-200">
           <BackButton />

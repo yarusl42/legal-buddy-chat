@@ -79,7 +79,6 @@ const fetchChatResponseData = [
 
 const dummyChatId1 = generate_dummy_chat_id();
 const dummyChatId2 = generate_dummy_chat_id();
-const dummyMessageId = generate_dummy_message_id()
 
 export const chatService = {
   createChat: async (advisor: Advisor): Promise<{ chatId: string; initialMessage: ChatMessage }> => {
@@ -87,7 +86,7 @@ export const chatService = {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const initialMessage: ChatMessage = {
-      id: dummyMessageId,
+      id: generate_dummy_message_id(),
       content: `Hello! I'm your advisor. How can I help you today?`,
       sender: "advisor",
       timestamp: new Date().toISOString(),
