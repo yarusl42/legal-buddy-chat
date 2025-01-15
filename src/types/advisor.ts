@@ -12,4 +12,6 @@ export interface ChatMessage {
   sender: "user" | "advisor";
   timestamp: string;
   chatId: string;
+  liked?: boolean;
 }
+

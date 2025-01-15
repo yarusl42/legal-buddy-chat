@@ -14,12 +14,15 @@ import { Button } from '@/components/ui/button';
 
 interface ChatMessageProps {
   message: ChatMessageType;
+  onSaveEditMessage: (messages: ChatMessageType, editedMessage: string) => Promise<void>;
 }
 
-export const ChatMessage = ({ message }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onSaveEditMessage }: ChatMessageProps) => {
   const isAdvisor = message.sender === "advisor";
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(message.content);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -30,7 +33,14 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
     toast.info("Регенерация ответа...");
   };
 
-  const handleFeedback = (type: 'like' | 'dislike') => {
+  const handleFeedback = (type: 'like' | 'dislike' ) => {
+    if (type === 'like') {
+      setLiked(!liked);
+      setDisliked(false);
+    } else {
+      setDisliked(!disliked);
+      setLiked(false);
+    }
     toast.success(`${type === 'like' ? 'Положительный' : 'Отрицательный'} отзыв отправлен`);
   };
 
@@ -38,23 +48,25 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
     setIsEditing(true);
   };
 
-  const handleSaveEdit = () => {
-    message.content = editedMessage;
+  const handleSaveEdit = async () => {
+    console.log(editedMessage);
     setIsEditing(false);
-    toast.success("Сообщение обновлено");
+
+    await onSaveEditMessage(message, editedMessage);
   };
 
-  const ActionButton = ({ icon: Icon, tooltip, onClick }: { 
+  const ActionButton = ({ icon: Icon, tooltip, onClick, className }: { 
     icon: any, 
     tooltip: string, 
-    onClick: () => void 
+    onClick: () => void,
+    className?: string
   }) => (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
           <button
             onClick={onClick}
-            className="p-1.5 hover:bg-black/5 rounded-md transition-colors"
+            className={`p-1.5 hover:bg-black/5 rounded-md transition-colors ${className}`}
           >
             <Icon className="h-4 w-4 text-gray-500" />
           </button>
@@ -114,7 +126,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
                 </div>
               )}
               {isAdvisor && (
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-8 left-0 flex gap-1.5">
+                <div className="group-hover:opacity-100 transition-opacity absolute -bottom-8 left-0 flex gap-1.5">
                   <ActionButton
                     icon={Copy}
                     tooltip="Копировать"

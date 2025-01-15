@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChatMessage } from '@/types/advisor';
+import { ChatMessage, ChatMessage as ChatMessageType } from '@/types/advisor';
 
 interface MessagesState {
   messages: Record<string, ChatMessage[]>; // chatId -> messages
@@ -27,6 +27,9 @@ const messagesSlice = createSlice({
         ...message,
         chatId
       });
+    },
+    setChatMessages: (state, action: PayloadAction<{ chatId: string; messages: ChatMessage[] | ChatMessageType[] }>) => {
+      state.messages[action.payload.chatId] = action.payload.messages;
     },
     setMessages: (state, action: PayloadAction<ChatMessage[]>) => {
       state.messages = {};
@@ -56,7 +59,8 @@ export const {
   clearMessages,
   setLoading,
   setError,
-  clearAllMessages
+  clearAllMessages,
+  setChatMessages
 } = messagesSlice.actions;
 
 export default messagesSlice.reducer;

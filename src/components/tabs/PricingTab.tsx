@@ -7,12 +7,22 @@ import { Check } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
 import { setCurrentPlan } from "@/store/slices/plansSlice";
 import { addCard } from "@/store/slices/paymentMethodsSlice";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogOverlay,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 const PricingTab = () => {
   const availablePlans = useAppSelector((state) => state.plans.availablePlans);
   const currentPlan = useAppSelector((state) => state.plans.currentPlan);
   const paymentMethods = useAppSelector((state) => state.paymentMethods);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
   const [status, setStatus] = useState("");
   const [newPlan, setNewPlan] = useState("");
   const [formData, setFormData] = useState({
@@ -23,19 +33,14 @@ const PricingTab = () => {
   const [errors, setErrors] = useState({});
 
   const handleChoosePlan = async (plan: string) => {
-    if (plan === currentPlan) {
-      toast.info("You are already on this plan");
-      return;
-    }
-
     setNewPlan(plan);
     setStatus("Checking payment methods...");
 
     try {
-      // Simulate checking payment methods
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (paymentMethods.length === 0) {
+        setDialogMessage("No payment methods available.");
         setIsDialogOpen(true);
       } else {
         handleUpgradePlan(plan);
@@ -49,7 +54,8 @@ const PricingTab = () => {
 
   const handleUpgradePlan = async (plan: string) => {
     setStatus("Processing plan change...");
-    
+    setDialogMessage("Processing plan change...");
+
     toast.promise(
       new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -135,6 +141,17 @@ const PricingTab = () => {
           handleUpgradePlan(newPlan)
         }} 
       />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogOverlay />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Status</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>{dialogMessage}</DialogDescription>
+          <DialogClose onClick={() => setIsDialogOpen(false)}>Close</DialogClose>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

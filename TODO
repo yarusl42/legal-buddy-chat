@@ -1,11 +1,8 @@
 
 - Images 
-
 - Landing page 
-- Scroll bar should be to the bottom of the page
-- toasts doen't work
-
 - Switch plan card  
+- Editing user messages, regenerating, liking and disliking
 
 Backend:
 - google auth button

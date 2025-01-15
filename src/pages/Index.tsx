@@ -11,6 +11,9 @@ import { setActiveChat } from "@/store/slices/chatsSlice";
 import { chatService } from '@/services/chatService';
 import { setSelectedAdvisor } from "@/store/slices/advisorsSlice";
 import { Advisor } from "@/types/advisor";
+import { setChatMessages } from "@/store/slices/messagesSlice";
+import { ChatMessage as ChatMessageType } from "../types/advisor";
+import { toast } from "react-toastify";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -101,6 +104,22 @@ const Index = () => {
     });  
   };
 
+  const onSaveEditMessage = async (message: ChatMessageType, newContent: string) => {
+
+    toast.success("Сообщение обновлено");
+
+    const editedIndex = messages.findIndex(msg => msg.id === message.id);
+    if (editedIndex == -1) {
+      toast.error("Couldn't update message. Something went wrong...");
+      return;
+    }
+
+    const updatedMessages: ChatMessageType[] = [...messages.slice(0, editedIndex), {...message, content: newContent}]
+    dispatch(setChatMessages({ chatId: activeChat, messages: updatedMessages }));
+
+    await chatService.updateMessage(message, newContent)
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="w-80 bg-white p-4 border-r border-gray-200 overflow-y-auto">
@@ -138,7 +157,7 @@ const Index = () => {
         })}
       </div>
 
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col">
         <div className="bg-white border-b border-gray-200 p-4">
           <div className="flex items-center space-x-3">
             {
@@ -161,7 +180,7 @@ const Index = () => {
           </div>
         </div>
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-4 flex justify-center pb-32" 
+          className="flex-1 overflow-y-auto p-4 space-y-4 flex justify-center  mb-4" 
           ref={messagesContainerRef}
           style={{ 
             opacity: messagesOpacity,
@@ -172,7 +191,7 @@ const Index = () => {
             {
               chats?.length ? (
                 messages.map((message) => (
-                  <ChatMessage key={message.id} message={message} />
+                  <ChatMessage key={message.id} message={message} onSaveEditMessage={onSaveEditMessage} />
                 ))   
               ) : (
                 <div className="flex justify-center items-center h-full">
@@ -180,12 +199,14 @@ const Index = () => {
                 </div>
               )
             }
-          
           </div>
         </div>
-        <div className="w-full max-w-[800px] bg-white absolute bottom-2 left-1/2 transform -translate-x-1/2">
+            
+        <div className="w-full flex justify-center">
+          <div className="w-full mb-2 max-w-[800px] bg-white">
             <ChatInput onSendMessage={handleSendMessage} />
           </div>
+        </div>
       </div>
     </div>
   );

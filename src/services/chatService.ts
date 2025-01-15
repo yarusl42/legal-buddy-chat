@@ -151,6 +151,20 @@ export const chatService = {
 
     return response;
   },
+  updateMessage: async (message: ChatMessage, editedMessage: string) => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const response: ChatMessage = {
+      id: generate_dummy_message_id(),
+      content: "response to: " + editedMessage,
+      sender: "advisor",
+      timestamp: new Date().toISOString(),
+      chatId: message.chatId,
+    };
+
+    store.dispatch(addMessage({ chatId: message.chatId, message: response }));
+  },
   loadChats: async (): Promise<{ chats: Chat[], messages: ChatMessage[]; advisors: Advisor[] }> => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
