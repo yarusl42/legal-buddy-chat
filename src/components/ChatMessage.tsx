@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { chatService } from "@/services/chatService";
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -21,26 +22,23 @@ export const ChatMessage = ({ message, onSaveEditMessage }: ChatMessageProps) =>
   const isAdvisor = message.sender === "advisor";
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState(message.content);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
-
+  
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
     toast.success("Сообщение скопировано");
   };
 
   const handleRegenerate = () => {
+    chatService.regenerateMessage(message);
     toast.info("Регенерация ответа...");
   };
 
-  const handleFeedback = (type: 'like' | 'dislike' ) => {
-    if (type === 'like') {
-      setLiked(!liked);
-      setDisliked(false);
-    } else {
-      setDisliked(!disliked);
-      setLiked(false);
+  const handleFeedback = async (type: 'like' | 'dislike' ) => {
+    const currentState = typeof message.liked === "boolean" && message.liked
+    if ((currentState && type === 'like') || (!currentState && type === 'dislike')) {
+      toast.error("Вы уже оценили это сообщение");
     }
+    await chatService.updateMessageRating(message, type === 'like');
     toast.success(`${type === 'like' ? 'Положительный' : 'Отрицательный'} отзыв отправлен`);
   };
 

@@ -106,14 +106,12 @@ const Index = () => {
 
   const onSaveEditMessage = async (message: ChatMessageType, newContent: string) => {
 
-    toast.success("Сообщение обновлено");
-
     const editedIndex = messages.findIndex(msg => msg.id === message.id);
     if (editedIndex == -1) {
       toast.error("Couldn't update message. Something went wrong...");
       return;
     }
-
+    toast.success("Сообщение обновлено");
     const updatedMessages: ChatMessageType[] = [...messages.slice(0, editedIndex), {...message, content: newContent}]
     dispatch(setChatMessages({ chatId: activeChat, messages: updatedMessages }));
 

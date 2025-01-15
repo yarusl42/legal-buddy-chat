@@ -1,6 +1,6 @@
 import { Advisor, ChatMessage } from "@/types/advisor";
 import { store } from '@/store'; // Import your store
-import { addMessage, setMessages } from '@/store/slices/messagesSlice'; 
+import { addMessage, setMessages, rateMessage, regenerateMessage } from '@/store/slices/messagesSlice'; 
 import { addSelectedAdvisor, setSelectedAdvisors } from "@/store/slices/advisorsSlice";
 import { createChat as createChatSlice, setChats, setActiveChat } from "@/store/slices/chatsSlice";
 import { Chat } from '@/types/types';
@@ -150,6 +150,26 @@ export const chatService = {
     store.dispatch(addMessage({ chatId: message.chatId, message: response }));
 
     return response;
+  },
+  updateMessageRating: async (message: ChatMessage, rating: boolean) => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    // if error throw error
+    if (Math.random() < 0.01) {
+      throw new Error("Failed to update message rating");
+    }
+    // Dispatch action to update the message rating
+    store.dispatch(rateMessage({ message: message, rating: rating }));
+  },
+  regenerateMessage: async (message: ChatMessage) => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    // if error throw error
+    if (Math.random() < 0.01) {
+      throw new Error("Failed to regenerate message");
+    }
+    // Dispatch action to update the message rating
+    store.dispatch(regenerateMessage({ message: {...message, content: "Regenerated: " + message.content} }));
   },
   updateMessage: async (message: ChatMessage, editedMessage: string) => {
     // Simulate API call delay
